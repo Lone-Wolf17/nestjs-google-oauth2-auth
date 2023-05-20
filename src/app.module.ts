@@ -5,23 +5,19 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { Passport } from 'passport';
 import { PassportModule } from '@nestjs/passport';
+import EnvVars from './constants/EnvVars';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     PassportModule.register({ session: true }),
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, expandVariables: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.PG_HOST,
-      port: parseInt(process.env.PG_PORT),
-      username: process.env.PG_USER,
-      password: process.env.PG_PASSWORD,
-      database: process.env.PG_DB,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      url: EnvVars.DatabaseUrl,
+      autoLoadEntities: true,
       synchronize: true,
     }),
   ],
